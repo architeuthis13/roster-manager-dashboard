@@ -1,0 +1,112 @@
+[
+  {
+    "id": "cr01",
+    "name": "Margaret Thornton",
+    "suburb": "Aspley",
+    "supportNeeds": ["personal_care", "medication_management", "mobility_assistance"],
+    "requiredWorkerAttributes": {
+      "languages": ["English"],
+      "genderPreference": "female",
+      "requiredSkills": ["medication_management", "manual_handling"]
+    }
+  },
+  {
+    "id": "cr02",
+    "name": "Robert Nguyen",
+    "suburb": "Chermside",
+    "supportNeeds": ["personal_care", "domestic_assistance"],
+    "requiredWorkerAttributes": {
+      "languages": ["English", "Vietnamese"],
+      "genderPreference": null,
+      "requiredSkills": ["personal_care"]
+    }
+  },
+  {
+    "id": "cr03",
+    "name": "Dorothy Papadopoulos",
+    "suburb": "Kedron",
+    "supportNeeds": ["dementia_care", "personal_care", "meal_preparation"],
+    "requiredWorkerAttributes": {
+      "languages": ["English"],
+      "genderPreference": "female",
+      "requiredSkills": ["dementia_care", "personal_care"]
+    }
+  },
+  {
+    "id": "cr04",
+    "name": "William Abara",
+    "suburb": "Stafford",
+    "supportNeeds": ["community_access", "life_skills"],
+    "requiredWorkerAttributes": {
+      "languages": ["English"],
+      "genderPreference": null,
+      "requiredSkills": ["community_access"]
+    }
+  },
+  {
+    "id": "cr05",
+    "name": "Helen Kowalski",
+    "suburb": "Clayfield",
+    "supportNeeds": ["personal_care", "manual_handling"],
+    "requiredWorkerAttributes": {
+      "languages": ["English"],
+      "genderPreference": "female",
+      "requiredSkills": ["manual_handling", "personal_care"]
+    }
+  },
+  {
+    "id": "cr06",
+    "name": "James Okonkwo",
+    "suburb": "Nundah",
+    "supportNeeds": ["personal_care", "domestic_assistance", "medication_management"],
+    "requiredWorkerAttributes": {
+      "languages": ["English"],
+      "genderPreference": null,
+      "requiredSkills": ["medication_management"]
+    }
+  },
+  {
+    "id": "cr07",
+    "name": "Patricia Singh",
+    "suburb": "Boondall",
+    "supportNeeds": ["personal_care", "community_access"],
+    "requiredWorkerAttributes": {
+      "languages": ["English", "Hindi"],
+      "genderPreference": "female",
+      "requiredSkills": ["personal_care"]
+    }
+  },
+  {
+    "id": "cr08",
+    "name": "Kevin Tran",
+    "suburb": "Zillmere",
+    "supportNeeds": ["life_skills", "community_access", "domestic_assistance"],
+    "requiredWorkerAttributes": {
+      "languages": ["English", "Vietnamese"],
+      "genderPreference": null,
+      "requiredSkills": ["community_access", "life_skills"]
+    }
+  },
+  {
+    "id": "cr09",
+    "name": "Edith Morales",
+    "suburb": "Wavell Heights",
+    "supportNeeds": ["personal_care", "meal_preparation"],
+    "requiredWorkerAttributes": {
+      "languages": ["English", "Spanish"],
+      "genderPreference": "female",
+      "requiredSkills": ["personal_care"]
+    }
+  },
+  {
+    "id": "cr10",
+    "name": "Frank Dimitriou",
+    "suburb": "Geebung",
+    "supportNeeds": ["personal_care", "mobility_assistance"],
+    "requiredWorkerAttributes": {
+      "languages": ["English"],
+      "genderPreference": null,
+      "requiredSkills": ["manual_handling", "mobility_assistance"]
+    }
+  }
+]

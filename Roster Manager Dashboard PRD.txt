@@ -1,0 +1,180 @@
+🗂️ COMPLETE PRD — Roster Manager Dashboard
+Product: Roster Manager Dashboard
+Sector: Disability Support & Aged Care (Australia)
+Version: 1.0 — Hackathon MVP
+Date: March 2026
+Author: You (PM)
+
+1. Context & Background
+Disability Support and Aged Care organisations deliver personalised, ongoing support services to vulnerable people — referred to as care recipients. These services are delivered by support workers rostered to specific shifts.
+A Roster Manager ensures every care recipient has the right support worker showing up, on time, with the right qualifications, every single shift. The stakes are high: a missed shift or an unqualified worker is a safety and compliance risk for a vulnerable person.
+Roster managers already have a rostering tool to allocate shifts. What they lack is operational visibility. This dashboard is not a rostering tool — it sits alongside the existing system and surfaces what needs attention right now, and what will become a problem soon.
+
+2. Problem Statement
+Without a dedicated oversight tool, roster managers are forced to:
+
+Manually check multiple screens or reports to find problems
+React to crises rather than prevent them
+Manually match staff to open shifts — checking qualifications, travel proximity, hours, and care recipient requirements one by one
+Accidentally underutilise permanent staff while over-relying on casuals, creating legal and cost exposure
+Miss overtime obligations by approving shifts without visibility of pending leave or cumulative hours
+Chase down missing compliance documents with no centralised view
+Manage leave and availability requests from a separate inbox
+
+Problems go unnoticed until they become urgent — or until a care recipient is left without support.
+
+3. Goal
+Build a command centre dashboard that gives a roster manager immediate visibility into everything that needs their attention right now, and flags problems before they become crises.
+This is not a rostering tool. It does not create or edit shifts. It provides oversight and decision support on top of an existing rostering system.
+
+4. Users
+Primary — The Roster Manager
+Coordinates staffing for a caseload of 20–100+ care recipients. Manages support workers with varying qualifications, availability, employment types, and working hour limits. Operates under NDIS, aged care quality standards, and the SCHADS Award. Spends most of their day firefighting — this tool should reduce that.
+Out of scope: Support workers, care recipients, finance/payroll, family/guardians.
+
+5. Domain Concepts (Glossary)
+TermDefinitionCare RecipientThe vulnerable person receiving support servicesSupport WorkerThe staff member delivering the serviceShiftA scheduled service — has a care recipient, time, location, and may or may not have a worker assignedOpen ShiftA shift with no worker assigned — an urgent problemComplianceA certification a worker must hold to legally work certain shifts (e.g. NDIS Worker Screening, Working With Children Check / Blue Card, First Aid)Suitability MatchWhether a worker's attributes align with what the care recipient needs (language, gender preference, specific support skills)Check-in / Check-outWorkers confirm arrival and departure — missing either is a safety and billing issueSCHADS AwardThe Social, Community, Home Care and Disability Services Industry Award — the primary Award governing pay, hours, and conditions for this workforce in AustraliaBroken ShiftTwo separate periods of work in a single day with a gap — attracts an allowance under SCHADSProximity BandA three-tier geographic indicator (Nearby / Moderate / Significant) based on worker home suburb vs shift suburb — no API, manager reads the geography directly
+
+6. Jobs To Be Done
+#JobNatureJ1See all open shifts and fill them quickly with the right personReactive + ProactiveJ2Review and respond to staff-initiated shift requestsReactiveJ3Be alerted to late or missed check-ins and missed check-outsReactiveJ4Spot compliance and suitability warnings on current allocationsProactiveJ5Keep on top of outstanding and expiring compliance documentsProactiveJ6Manage pending leave and availability requestsOngoingJ7Avoid unintentional overtime across shifts, pending requests, and leaveProactiveJ8Preference permanent staff appropriately before using casualsProactive
+
+7. Features (MoSCoW)
+Must Have
+7.1 Operations Overview Panel
+A summary row of cards at the top of the dashboard. Every card shows a count and is visually urgent when above zero. Each card is clickable and drills into the relevant section.
+Cards:
+
+Open Shifts (unassigned)
+Shifts with Incoming Requests (awaiting manager review)
+Late Check-ins
+Missed Check-outs
+Compliance Warnings on current allocations
+Expiring / Missing Compliance Documents
+Pending Leave Requests
+Pending Availability Requests
+
+
+7.2 Open Shift Management — Two Modes
+Shifts exist in three visually distinct states:
+Shift StateLabelManager ActionNo worker assigned, not published"Needs Filling"Mode A — manager finds someonePublished, requests received"X Requests" badgeMode B — manager reviews requestsPublished, no requests yet"Published – Awaiting Requests"Monitor; auto-escalates at threshold
+Mode A — Manager Finds Someone ("Find Me Someone")
+Manager opens an unassigned shift. Dashboard surfaces a ranked candidate list from the eligible staff pool. Each candidate shows:
+
+Employment type (Permanent FT / Permanent PT / Casual)
+Hours this week vs contracted hours — displayed as a range when pending items exist (e.g. "22 / 25 hrs · ↑ up to 25 if pending request approved")
+Overtime warning level (progressive — see Section 8)
+Pending leave flag if applicable ("⚠ Pending leave overlaps this shift — assign with caution")
+Compliance status — documents held, missing, or expiring — validated against shift start date
+Suitability match to the care recipient
+Geographic proximity — worker home suburb → shift suburb, with proximity band label (🟢 Nearby / 🟡 Moderate travel / 🔴 Significant travel)
+Broken shift flag if this shift would create two periods of work with a gap on the same day
+
+Candidate ranking defaults to:
+
+Permanent FT — within contracted hours, compliant, suitable
+Permanent PT — within contracted hours, compliant, suitable
+Permanent FT/PT — overtime flagged
+Casual — compliant and suitable
+Casual — with warnings
+
+Unsuitable candidates (on approved leave, missing mandatory compliance, breaching overtime) are visually demoted and flagged — never hidden.
+Mode B — Manager Reviews Incoming Requests
+Manager opens a shift with staff requests. Dashboard shows:
+
+A ranked review queue of requestors, each showing the same suitability signals as Mode A
+How many requests have come in and when
+A "Best available (not yet requested)" suggestion — top candidate from the full staff pool who hasn't self-selected, so the manager isn't limited to whoever volunteered
+Approving one request auto-declines all others
+"Decline All & Find Someone" converts the shift to Mode A and pre-populates the candidate list with the best available match
+
+Auto-escalation rule: Published shifts with no requests that cross a configurable urgency threshold (default: 4 hours before shift start) automatically escalate to "Needs Filling Now" — treated as Mode A with a visible countdown and surfaced in the urgent alerts panel.
+
+7.3 Check-in Alert Feed
+Live list of shifts that are:
+
+Not yet checked in (with time overdue shown)
+Checked in late
+Missing a check-out
+
+Sorted by severity. Each item shows: care recipient name, assigned worker name, shift time, and how overdue the action is.
+
+7.4 Compliance Warning Flags
+Inline warnings on any shift allocation where:
+
+A required compliance document is missing or expired — always validated against the shift start date, not today's date
+Worker attributes don't match the care recipient's support needs
+Worker would exceed contracted hours (progressive threshold warnings)
+A pending leave request overlaps the shift date
+The shift is under 2 hours (SCHADS minimum engagement)
+The shift creates a broken shift for the worker that day
+
+Compliance is re-checked continuously — whenever a document is updated, a care recipient's profile changes, or a worker's leave status changes. Approved allocations are never treated as permanently clean.
+
+7.5 Compliance Document Tracker
+A list of all staff with missing, expired, or soon-to-expire documents. Each row shows: worker name, employment type, document type, expiry date or "Missing", and days overdue or days until expiry. Sorted by urgency.
+
+7.6 Shift Timeline View (Read-Only)
+A 7-day grid of all allocated shifts — for scanning, not editing. Colour-coded by alert severity. Warning badges overlaid on shifts with compliance mismatches, overtime risk, or check-in issues.
+
+Should Have
+7.7 Leave & Availability Request Queue
+Pending leave and casual availability requests with approve/deny actions.
+When leave is approved:
+
+Worker's status updates to On Leave for that period
+All their shifts during that period auto-reopen as "Originally Filled — Now Vacant"
+Manager is shown a summary of which shifts were affected
+Overtime re-evaluation sweep runs for any workers likely to fill those vacated shifts
+
+Pending leave requests must never allow a worker to appear as cleanly available anywhere in the dashboard — they always carry a visible caveat.
+
+Won't Have (Hackathon Scope)
+
+Creating or editing shifts — that is the rostering tool's job
+Worker-facing screens (viewing shifts, submitting leave)
+Real-time GPS or live check-in integration (mock data only)
+Location API calls of any kind — suburb display only
+Payroll or billing
+Casual conversion tracking (12-month systematic hours rule — future feature)
+Login / authentication
+Mobile layout
+
+
+8. Overtime & Leave Rules
+Hours are always a range when pending items exist — never a single number.
+Five components feed into hours calculations:
+ComponentHow It's CountedConfirmed / worked shiftsHard countApproved upcoming shiftsHard countPending shift requestsUpper range — risk flagApproved leaveDeducted from available capacityPending leaveRisk range caveat — shown on all candidate screens
+Display format: "22 / 25 hrs · ↑ up to 25 hrs if pending request approved"
+Progressive overtime warning thresholds:
+ThresholdDisplayUnder 80% contracted hoursNo flag80–90%🟡 Amber — "Approaching limit"90–100%🟠 Orange — "Near limit"100–110%🔴 Red — "Overtime risk"110%+🔴 Critical red — "Significant overtime"Pending leave overlaps shift🔵 Blue info flag — independent of hoursApproved leave overlaps shift🔴 Red — worker must not appear as available
+Cross-shift conflict detection operates across the full request pool. If a worker has requested multiple overlapping shifts, approving one must auto-withdraw them from conflicting queues and notify the manager of the withdrawals.
+
+9. Employment Type Rules (Australian — SCHADS Award)
+TypeContracted HoursLeave EntitlementsOvertime TriggerShift PriorityPermanent Full-Time38 hrs/weekAnnual, personal/carer's, compassionateAbove 38 hrs/weekFirstPermanent Part-TimeFixed (e.g. 20 hrs/week)Same as FT, pro-rataAbove contracted hoursSecondCasualNone guaranteedNone (25% loading instead)Track for conversion riskFill gaps
+SCHADS minimum shift engagement: 2 hours. Flag any shift under 2 hours.
+Broken shifts (two periods of work same day with a gap): flag — attract an allowance under SCHADS.
+
+10. Geographic Proximity
+No location API calls. No calculated travel times. Suburb-to-suburb display only.
+Roster managers know their local geography intuitively. "Chermside → Aspley" means more to them than an API-calculated "14 minutes" they cannot verify.
+Display format on candidate cards:
+
+📍 Chermside → Aspley 🟢 Nearby
+
+Three proximity bands (hardcoded in mock data):
+BandLabelBasisSame or adjacent suburb🟢 NearbySuburb names match or are in the same postcode groupSame broad region🟡 Moderate travelPostcodes within a defined numeric rangeDifferent region🔴 Significant travelPostcodes far apart
+Proximity band is a soft hint only — the manager makes the final call. Bands are pre-assigned in mock data. No calculation required.
+
+11. Edge Cases (All Must Be Handled)
+#ScenarioRequired BehaviourEC-01Published shift, no requests, start time approachingAuto-escalate to "Needs Filling Now" at configurable threshold (default 4hrs); show countdownEC-02All Mode B requestors are unsuitable"Decline All & Find Someone" — converts to Mode A with pre-populated candidate listEC-03Best candidate hasn't requested the published shiftShow "Best available (not yet requested)" in Mode B panel alongside request queueEC-04Same worker requests multiple overlapping shiftsCross-shift conflict warning on approval; auto-withdraw from conflicting queues after approval; notify managerEC-05Compliance expires between request date and shift dateAlways validate against shift start date; re-check on any document updateEC-06Care recipient support needs change after shift is filledRe-validation sweep of all future shifts for that recipient; affected shifts surface in warnings panelEC-07Assigned worker becomes unavailable after approvalAuto-reopen as "Originally Filled — Now Vacant"; prompt manager to choose Mode A or re-publishEC-08Overtime creep across multiple shift approvalsCumulative hours include confirmed + approved + pending shifts; approved and pending leave included in calculationEC-09Leave approved after shifts already filledVacated shifts auto-reopen; re-evaluate overtime exposure of workers likely to cover those shiftsEC-10Pending leave creates phantom availabilityWorkers with pending leave never appear as cleanly available; always show caveat on all candidate screens
+
+12. Definition of Done (Hackathon)
+A roster manager opens the dashboard and within 30 seconds can:
+
+See a count of every problem type needing attention today
+Open an unassigned shift and see a ranked, explained candidate list with suburb proximity displayed
+Open a shift with incoming staff requests and review them with full suitability context
+See a worker who hasn't checked in and how long the shift has been running unconfirmed
+See which staff have compliance documents expiring or missing
+Understand at a glance whether any candidates carry overtime or leave risk — shown as a range, not a single number
+

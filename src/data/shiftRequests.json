@@ -1,0 +1,23 @@
+[
+  {
+    "id": "sr01",
+    "shiftId": "sh04",
+    "workerId": "w01",
+    "requestedAt": "2026-04-13T09:30:00",
+    "status": "pending"
+  },
+  {
+    "id": "sr02",
+    "shiftId": "sh04",
+    "workerId": "w03",
+    "requestedAt": "2026-04-13T11:00:00",
+    "status": "pending"
+  },
+  {
+    "id": "sr03",
+    "shiftId": "sh05",
+    "workerId": "w05",
+    "requestedAt": "2026-04-13T14:00:00",
+    "status": "pending"
+  }
+]

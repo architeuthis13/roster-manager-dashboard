@@ -1,0 +1,52 @@
+[
+  {
+    "id": "lr01",
+    "workerId": "w01",
+    "type": "annual_leave",
+    "startDate": "2026-04-17",
+    "endDate": "2026-04-19",
+    "status": "pending",
+    "overlappingShiftIds": ["sh18"],
+    "appliedAt": "2026-04-12T09:00:00"
+  },
+  {
+    "id": "lr02",
+    "workerId": "w09",
+    "type": "personal_leave",
+    "startDate": "2026-04-16",
+    "endDate": "2026-04-16",
+    "status": "pending",
+    "overlappingShiftIds": ["sh13"],
+    "appliedAt": "2026-04-13T14:30:00"
+  },
+  {
+    "id": "lr03",
+    "workerId": "w11",
+    "type": "annual_leave",
+    "startDate": "2026-04-21",
+    "endDate": "2026-04-24",
+    "status": "pending",
+    "overlappingShiftIds": [],
+    "appliedAt": "2026-04-10T10:15:00"
+  },
+  {
+    "id": "lr04",
+    "workerId": "w04",
+    "type": "personal_leave",
+    "startDate": "2026-04-14",
+    "endDate": "2026-04-16",
+    "status": "approved",
+    "overlappingShiftIds": ["sh19"],
+    "appliedAt": "2026-04-11T08:00:00"
+  },
+  {
+    "id": "lr05",
+    "workerId": "w06",
+    "type": "annual_leave",
+    "startDate": "2026-04-22",
+    "endDate": "2026-04-25",
+    "status": "pending",
+    "overlappingShiftIds": [],
+    "appliedAt": "2026-04-09T16:45:00"
+  }
+]

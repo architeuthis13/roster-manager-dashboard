@@ -1,0 +1,6 @@
+{
+  "escalationThresholdHours": 4,
+  "currentWeekStart": "2026-04-14",
+  "currentWeekEnd": "2026-04-20",
+  "complianceExpiryWarningDays": 14
+}
