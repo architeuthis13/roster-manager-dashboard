@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { RosterProvider } from './context/RosterContext.jsx'
 import AppShell from './components/layout/AppShell.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
@@ -9,7 +9,7 @@ import CompliancePage from './pages/CompliancePage.jsx'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <RosterProvider>
         <AppShell>
           <Routes>
