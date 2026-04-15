@@ -21,6 +21,6 @@ export default function App() {
           </Routes>
         </AppShell>
       </RosterProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
