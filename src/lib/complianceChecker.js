@@ -122,6 +122,42 @@ export function getExpiredCompliance(state) {
   return results.sort((a, b) => b.daysExpired - a.daysExpired)
 }
 
+/**
+ * Returns workers who are missing required compliance documents entirely.
+ * "Missing" means no record of that document type exists — not the same as expired.
+ *
+ * Required for ALL workers: NDIS Worker Screening, Police Check
+ * Required for permanent workers: First Aid Certificate
+ *
+ * Returns array of { worker, missingDocs: string[] }
+ */
+export function getMissingCompliance(state) {
+  const { workers, complianceDocs } = state
+  const results = []
+
+  for (const worker of workers) {
+    const workerDocs = complianceDocs.filter(d => d.workerId === worker.id)
+    const docTypes = new Set(workerDocs.map(d => d.docType))
+    const missing = []
+
+    if (!docTypes.has('NDIS Worker Screening')) {
+      missing.push('NDIS Worker Screening')
+    }
+    if (!docTypes.has('Police Check')) {
+      missing.push('Police Check')
+    }
+    if (worker.employmentType !== 'casual' && !docTypes.has('First Aid Certificate')) {
+      missing.push('First Aid Certificate')
+    }
+
+    if (missing.length > 0) {
+      results.push({ worker, missingDocs: missing })
+    }
+  }
+
+  return results
+}
+
 function formatSkill(skill) {
   return skill
     .split('_')

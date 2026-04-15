@@ -3,6 +3,7 @@ import { useRoster } from '../../context/RosterContext.jsx'
 
 const filters = [
   { key: 'all', label: 'All' },
+  { key: 'missing', label: 'Missing' },
   { key: 'expired', label: 'Expired' },
   { key: 'expiring_soon', label: 'Expiring Soon' },
 ]
