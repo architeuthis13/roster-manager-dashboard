@@ -24,7 +24,7 @@ export default function ModeBPanel({ shift }) {
   const allCandidates = rankCandidatesForShift(shift.id, state)
   const requestorWorkerIds = new Set(requests.map(r => r.workerId))
   const bestNotRequested = allCandidates.find(
-    c => !requestorWorkerIds.has(c.workerId) && c.tier <= 2 && !c.flags?.includes('on_approved_leave')
+    c => !requestorWorkerIds.has(c.workerId) && !c.flags?.includes('on_approved_leave')
   )
 
   function handleApprove(requestId) {

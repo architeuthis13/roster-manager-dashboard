@@ -36,6 +36,14 @@ export function checkWorkerComplianceForShift(workerId, shiftId, state) {
     issues.push({ type: 'expired_police_check', message: `Police Check expired ${policeCheck.expiryDate}`, severity: 'error' })
   }
 
+  // Check Working With Children Check (Blue Card)
+  const wwcc = workerDocs.find(d => d.docType === 'Working With Children Check')
+  if (wwcc && wwcc.expiryDate < shift.date) {
+    issues.push({ type: 'expired_wwcc', message: `Working With Children Check (Blue Card) expired ${wwcc.expiryDate}`, severity: 'error' })
+  } else if (wwcc && daysBetween(todayStr(), wwcc.expiryDate) <= WARNING_DAYS) {
+    issues.push({ type: 'expiring_wwcc', message: `Working With Children Check expires ${wwcc.expiryDate}`, severity: 'warning' })
+  }
+
   // Check First Aid (required for most personal care roles)
   const firstAid = workerDocs.find(d => d.docType === 'First Aid Certificate')
   if (firstAid && firstAid.expiryDate < shift.date) {

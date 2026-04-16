@@ -3,7 +3,7 @@ import { useRoster } from '../context/RosterContext.jsx'
 import WorkerListToolbar from '../components/workers/WorkerListToolbar.jsx'
 import WorkerCard from '../components/workers/WorkerCard.jsx'
 import { calculateWorkerHours } from '../lib/hoursEngine.js'
-import { getExpiredCompliance } from '../lib/complianceChecker.js'
+import { getExpiredCompliance, getExpiringCompliance } from '../lib/complianceChecker.js'
 
 export default function WorkersPage() {
   const state = useRoster()
@@ -12,12 +12,14 @@ export default function WorkersPage() {
   const weekStart = config.currentWeekStart
   const weekEnd = config.currentWeekEnd
   const expiredWorkerIds = new Set(getExpiredCompliance(state).map(e => e.worker.id))
+  const expiringWorkerIds = new Set(getExpiringCompliance(14, state).map(e => e.worker.id))
+  const complianceIssueIds = new Set([...expiredWorkerIds, ...expiringWorkerIds])
 
   const filtered = workers.filter(worker => {
     if (workersFilter === 'all') return true
 
     if (workersFilter === 'compliance_issue') {
-      return expiredWorkerIds.has(worker.id)
+      return complianceIssueIds.has(worker.id)
     }
 
     if (workersFilter === 'overtime_risk') {

@@ -3,20 +3,23 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { useRoster } from '../../context/RosterContext.jsx'
 import Card, { CardHeader } from '../ui/Card.jsx'
 
-const DAYS = [
-  { key: '2026-04-14', label: 'Mon' },
-  { key: '2026-04-15', label: 'Tue' },
-  { key: '2026-04-16', label: 'Wed' },
-  { key: '2026-04-17', label: 'Thu' },
-  { key: '2026-04-18', label: 'Fri' },
-  { key: '2026-04-19', label: 'Sat' },
-  { key: '2026-04-20', label: 'Sun' },
-]
+const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 const openStatuses = ['needs_filling', 'open_requests', 'published_awaiting', 'originally_filled_vacant']
 
 export default function ShiftCoverageChart() {
-  const { shifts } = useRoster()
+  const { shifts, config } = useRoster()
+
+  // Generate 7-day array dynamically from config week start
+  const weekStart = new Date(config.currentWeekStart + 'T00:00:00')
+  const DAYS = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(weekStart)
+    d.setDate(weekStart.getDate() + i)
+    return {
+      key: d.toISOString().slice(0, 10),
+      label: DAY_LABELS[d.getDay()],
+    }
+  })
 
   const data = DAYS.map(({ key, label }) => {
     const dayShifts = shifts.filter(s => s.date === key)

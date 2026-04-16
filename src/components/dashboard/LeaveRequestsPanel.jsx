@@ -2,7 +2,7 @@ import React from 'react'
 import Card, { CardHeader } from '../ui/Card.jsx'
 import Badge from '../ui/Badge.jsx'
 import { useRoster } from '../../context/RosterContext.jsx'
-import { formatDate, formatDateRange } from '../../lib/dateUtils.js'
+import { formatDate, formatDateRange, formatTime } from '../../lib/dateUtils.js'
 
 const leaveTypeLabels = {
   annual_leave: 'Annual Leave',
@@ -11,7 +11,7 @@ const leaveTypeLabels = {
 }
 
 export default function LeaveRequestsPanel() {
-  const { leaveRequests, workers, shifts, approveLeaveRequest, declineLeaveRequest } = useRoster()
+  const { leaveRequests, workers, shifts, approveLeaveRequest, declineLeaveRequest, leaveApprovalSummary, dismissLeaveApprovalSummary } = useRoster()
 
   const pending = leaveRequests.filter(lr => lr.status === 'pending')
 
@@ -21,6 +21,36 @@ export default function LeaveRequestsPanel() {
         title="Leave Requests"
         subtitle={`${pending.length} pending request${pending.length !== 1 ? 's' : ''}`}
       />
+
+      {/* EC-09: Post-approval overtime re-evaluation guidance */}
+      {leaveApprovalSummary && (
+        <div className="mb-3 p-3 rounded-md bg-status-blueLight border border-status-blue/20">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-status-blue mb-1">
+                ✓ Leave approved — {leaveApprovalSummary.vacatedShifts.length} shift{leaveApprovalSummary.vacatedShifts.length !== 1 ? 's' : ''} reopened
+              </p>
+              <p className="text-xs text-text-secondary mb-2">
+                {leaveApprovalSummary.workerName}'s shifts ({formatDateRange(leaveApprovalSummary.startDate, leaveApprovalSummary.endDate)}) are now marked as Originally Filled — Now Vacant.
+              </p>
+              {leaveApprovalSummary.vacatedShifts.map(s => (
+                <p key={s.id} className="text-xs text-text-muted">
+                  {formatDate(s.date)} · {s.suburb} · {formatTime(s.startTime)}–{formatTime(s.endTime)}
+                </p>
+              ))}
+              <p className="text-xs text-status-blue mt-2 font-medium">
+                ⚠ Review overtime risk before reassigning — cover workers may breach contracted hours.
+              </p>
+            </div>
+            <button
+              onClick={dismissLeaveApprovalSummary}
+              className="text-text-muted hover:text-text-primary text-xs font-medium flex-shrink-0"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
 
       {pending.length === 0 && (
         <p className="text-xs text-text-muted">No pending leave requests.</p>

@@ -21,19 +21,29 @@ export default function WorkforceUtilisationChart() {
 
   const data = permWorkers.map(worker => {
     const hours = calculateWorkerHours(worker.id, state)
+    // Use pendingUpper (worst-case including pending requests) so chart shows full risk exposure
+    const worstCase = hours?.pendingUpper ?? hours?.baseHours ?? 0
     const pct = hours?.contractedHours
-      ? Math.round((hours.baseHours / hours.contractedHours) * 100)
+      ? Math.round((worstCase / hours.contractedHours) * 100)
       : 0
+    // Derive warning level from pendingUpper so bar colour reflects worst-case too
+    const pendingLevel = !hours?.contractedHours ? 'none'
+      : pct >= 110 ? 'critical'
+      : pct >= 100 ? 'red'
+      : pct >= 90 ? 'orange'
+      : pct >= 80 ? 'amber'
+      : 'none'
     return {
       name: worker.name.split(' ')[0],
       pct,
-      warningLevel: hours?.warningLevel || 'none',
+      warningLevel: pendingLevel,
+      hasPending: (hours?.pendingHours ?? 0) > 0,
     }
   })
 
   return (
     <Card>
-      <CardHeader title="Workforce Utilisation" subtitle="% of contracted hours (permanent staff)" />
+      <CardHeader title="Workforce Utilisation" subtitle="% of contracted hours incl. pending (permanent staff)" />
       <ResponsiveContainer width="100%" height={180}>
         <BarChart data={data} layout="vertical" barSize={10} margin={{ top: 0, right: 20, left: 40, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" horizontal={false} />
@@ -54,7 +64,10 @@ export default function WorkforceUtilisationChart() {
             width={40}
           />
           <Tooltip
-            formatter={(value) => [`${value}%`, 'Utilisation']}
+            formatter={(value, name, props) => [
+              `${value}%${props.payload?.hasPending ? ' (incl. pending)' : ''}`,
+              'Utilisation',
+            ]}
             contentStyle={{ fontSize: 12, border: '1px solid #E2E8F0', borderRadius: 6 }}
             cursor={{ fill: '#F8FAFC' }}
           />

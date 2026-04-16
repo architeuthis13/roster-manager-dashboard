@@ -6,10 +6,11 @@ import {
 } from 'lucide-react'
 import { useRoster } from '../../context/RosterContext.jsx'
 import { getExpiringCompliance, getExpiredCompliance } from '../../lib/complianceChecker.js'
+import { calculateWorkerHours } from '../../lib/hoursEngine.js'
 
 export default function OverviewPanel() {
   const state = useRoster()
-  const { shifts, leaveRequests, setShiftsFilter, setWorkersFilter, setComplianceFilter } = state
+  const { shifts, workers, leaveRequests, setShiftsFilter, setWorkersFilter, setComplianceFilter } = state
   const navigate = useNavigate()
 
   // Counts
@@ -32,6 +33,12 @@ export default function OverviewPanel() {
   const totalDocIssues = expiringDocs + expiredDocs
 
   const pendingLeave = leaveRequests.filter(lr => lr.status === 'pending').length
+
+  // Count workers (not shifts) at red/critical overtime threshold — matches Workers page filter
+  const overtimeRiskWorkers = workers.filter(w => {
+    const h = calculateWorkerHours(w.id, state)
+    return ['red', 'critical'].includes(h?.warningLevel)
+  }).length
 
   const cards = [
     {
@@ -99,7 +106,7 @@ export default function OverviewPanel() {
     },
     {
       label: 'Overtime Risk',
-      count: shifts.filter(s => s.flags?.includes('overtime_risk')).length,
+      count: overtimeRiskWorkers,
       icon: ShieldAlert,
       urgentColor: 'text-status-orange',
       urgentBg: 'bg-status-orangeLight border-status-orange/30',

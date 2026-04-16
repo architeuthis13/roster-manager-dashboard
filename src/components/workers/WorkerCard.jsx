@@ -6,7 +6,7 @@ import WorkerComplianceSection from './WorkerComplianceSection.jsx'
 import WorkerLeaveSection from './WorkerLeaveSection.jsx'
 import { useRoster } from '../../context/RosterContext.jsx'
 import { calculateWorkerHours } from '../../lib/hoursEngine.js'
-import { getExpiredCompliance } from '../../lib/complianceChecker.js'
+import { getExpiredCompliance, getExpiringCompliance } from '../../lib/complianceChecker.js'
 
 const employmentLabels = {
   permanent_ft: 'Perm FT',
@@ -23,12 +23,20 @@ const employmentVariants = {
 export default function WorkerCard({ worker }) {
   const state = useRoster()
   const hours = calculateWorkerHours(worker.id, state)
-  const expiredDocs = getExpiredCompliance(state).filter(e => e.worker.id === worker.id)
+  const hasExpiredDocs = getExpiredCompliance(state).some(e => e.worker.id === worker.id)
+  const hasExpiringDocs = getExpiringCompliance(14, state).some(e => e.worker.id === worker.id)
   const hasOvertimeRisk = ['red', 'critical'].includes(hours?.warningLevel)
-  const hasComplianceIssue = expiredDocs.length > 0
+
+  const borderClass = hasExpiredDocs
+    ? 'border-l-4 border-l-status-red'
+    : hasExpiringDocs
+    ? 'border-l-4 border-l-status-amber'
+    : hasOvertimeRisk
+    ? 'border-l-4 border-l-status-orange'
+    : ''
 
   return (
-    <Card className={hasComplianceIssue || hasOvertimeRisk ? 'border-l-4 border-l-status-red' : ''}>
+    <Card className={borderClass}>
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>
@@ -43,7 +51,8 @@ export default function WorkerCard({ worker }) {
           </p>
         </div>
         <div className="flex gap-1">
-          {hasComplianceIssue && <Badge variant="red">Compliance</Badge>}
+          {hasExpiredDocs && <Badge variant="red">Compliance</Badge>}
+          {!hasExpiredDocs && hasExpiringDocs && <Badge variant="amber">Expiring Soon</Badge>}
           {hasOvertimeRisk && <Badge variant="orange">Overtime</Badge>}
         </div>
       </div>

@@ -3,6 +3,7 @@ import Card, { CardHeader } from '../ui/Card.jsx'
 import Alert from '../ui/Alert.jsx'
 import { useRoster } from '../../context/RosterContext.jsx'
 import { formatTime, minutesUntil } from '../../lib/dateUtils.js'
+import { checkWorkerComplianceForShift } from '../../lib/complianceChecker.js'
 
 function formatOverdue(shiftDate, shiftTime) {
   const mins = minutesUntil(shiftDate, shiftTime)
@@ -26,7 +27,8 @@ function formatCheckInLate(shiftDate, shiftTime, checkInTime) {
 }
 
 export default function CriticalAlertsPanel() {
-  const { shifts, workers, careRecipients } = useRoster()
+  const state = useRoster()
+  const { shifts, workers, careRecipients } = state
 
   const alerts = []
 
@@ -68,13 +70,19 @@ export default function CriticalAlertsPanel() {
       })
     }
 
-    if (shift.flags?.includes('compliance_mismatch')) {
-      alerts.push({
-        key: `${shift.id}-compliance`,
-        severity: 'error',
-        title: `Compliance issue — ${workerName}`,
-        description: `${workerName} has a compliance or suitability issue for their ${shift.suburb} shift (${crName}).`,
-      })
+    // EC-06: Live compliance check — detects issues even if flags haven't been re-computed
+    if (shift.assignedWorkerId) {
+      const liveIssues = checkWorkerComplianceForShift(shift.assignedWorkerId, shift.id, state)
+      if (liveIssues.length > 0) {
+        const errorIssues = liveIssues.filter(i => i.severity === 'error')
+        const topIssue = liveIssues[0]
+        alerts.push({
+          key: `${shift.id}-compliance`,
+          severity: errorIssues.length > 0 ? 'error' : 'warning',
+          title: `Compliance issue — ${workerName}`,
+          description: `${topIssue.message}${liveIssues.length > 1 ? ` (+${liveIssues.length - 1} more)` : ''}. ${crName}, ${shift.suburb}.`,
+        })
+      }
     }
 
     if (shift.flags?.includes('schads_min_breach')) {

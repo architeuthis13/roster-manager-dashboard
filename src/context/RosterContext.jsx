@@ -22,6 +22,7 @@ export function RosterProvider({ children }) {
 
   // UI state
   const [selectedShiftId, setSelectedShiftId] = useState(null)
+  const [leaveApprovalSummary, setLeaveApprovalSummary] = useState(null) // EC-09 guidance
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [shiftsDateRange, setShiftsDateRange] = useState({
     start: config.currentWeekStart,
@@ -214,12 +215,20 @@ export function RosterProvider({ children }) {
     const leave = leaveRequests.find(lr => lr.id === leaveRequestId)
     if (!leave) return
 
+    const leavingWorker = workers.find(w => w.id === leave.workerId)
+
     // Mark leave as approved
     setLeaveRequests(prev =>
       prev.map(lr => (lr.id === leaveRequestId ? { ...lr, status: 'approved' } : lr))
     )
 
     // EC-07/EC-09: Find all shifts assigned to this worker during leave period → reopen as vacant
+    const vacatedShifts = shifts.filter(
+      s =>
+        s.assignedWorkerId === leave.workerId &&
+        datesOverlap(s.date, s.date, leave.startDate, leave.endDate)
+    )
+
     setShifts(prev =>
       prev.map(s => {
         if (
@@ -261,6 +270,21 @@ export function RosterProvider({ children }) {
         }))
       )
     }
+
+    // EC-09: Surface overtime re-evaluation guidance if shifts were vacated
+    if (vacatedShifts.length > 0) {
+      setLeaveApprovalSummary({
+        workerName: leavingWorker?.name || 'Unknown',
+        leaveType: leave.type,
+        startDate: leave.startDate,
+        endDate: leave.endDate,
+        vacatedShifts: vacatedShifts.map(s => ({ id: s.id, date: s.date, suburb: s.suburb, startTime: s.startTime, endTime: s.endTime })),
+      })
+    }
+  }
+
+  function dismissLeaveApprovalSummary() {
+    setLeaveApprovalSummary(null)
   }
 
   function declineLeaveRequest(leaveRequestId) {
@@ -288,6 +312,7 @@ export function RosterProvider({ children }) {
     shiftsFilter,
     workersFilter,
     complianceFilter,
+    leaveApprovalSummary,
 
     // Actions
     openShiftDrawer,
@@ -298,6 +323,7 @@ export function RosterProvider({ children }) {
     declineAllRequestsAndConvertToModeA,
     approveLeaveRequest,
     declineLeaveRequest,
+    dismissLeaveApprovalSummary,
     setShiftsDateRange: range => setShiftsDateRange(range),
     setShiftsFilter,
     setWorkersFilter,

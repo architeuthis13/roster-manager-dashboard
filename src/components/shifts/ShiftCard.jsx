@@ -33,8 +33,8 @@ export default function ShiftCard({ shift }) {
   return (
     <div
       className={`bg-card border rounded-lg p-4 transition-shadow ${
+        isOpen && isEscalated ? 'border-l-4 border-l-status-orange border-border cursor-pointer hover:shadow-md' :
         isOpen ? 'border-l-4 border-l-status-red border-border cursor-pointer hover:shadow-md' :
-        isEscalated ? 'border-l-4 border-l-status-red border-border' :
         'border-border'
       }`}
       onClick={() => isOpen && openShiftDrawer(shift.id)}
